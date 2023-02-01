@@ -8,8 +8,11 @@ const updateProgressBar = lodash.throttle(function (str) {
   }
 }, 1000);
 
-// function splitChunkIntoLines(restOfPrevChunk, chunk, separator) {
-//   const
-// }
+function splitChunkIntoLines(restOfPrevChunk, chunk, separator) {
+  // const fullChunk = restOfPrevChunk + chunk;
+  // const
+}
+
+splitChunkIntoLines("452", "4554", "\n");
 
 module.exports = { updateProgressBar };
