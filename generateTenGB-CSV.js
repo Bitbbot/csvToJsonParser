@@ -1,7 +1,12 @@
 const fs = require("fs");
 const { Transform } = require("stream");
 const { updateProgressBar } = require("./utils");
-const { getLineSeparator, getFileSize, getValueDelimiter } = require("./file");
+const {
+  getLineSeparator,
+  getFileSize,
+  getValueDelimiter,
+  getSeparators,
+} = require("./file");
 
 //n defines how many times file will be replicated
 const n = 100;
@@ -13,9 +18,8 @@ const writePath = "./extendedTest.csv";
 async function generateTenGBCSV() {
   const readStream = fs.createReadStream(readPath);
   const writeStream = fs.createWriteStream(writePath);
-  const lineSeparator = JSON.stringify(await getLineSeparator(readPath));
-  const valueDelimiter = getValueDelimiter({ readPath, lineSeparator });
-  console.log(valueDelimiter);
+  const { lineSeparator, valueDelimiter } = await getSeparators(readPath);
+  console.log({ lineSeparator, valueDelimiter });
   const fileSize = await getFileSize(readPath);
 }
 
