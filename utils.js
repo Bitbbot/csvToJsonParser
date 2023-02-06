@@ -69,11 +69,74 @@ function validateDelimiter(delimiter) {
   } else return { isCorrect: false };
 }
 
-function splitChunkIntoLines(restOfPrevChunk, chunk, separator) {}
-splitChunkIntoLines("452", "4554", "\n");
+function splitChunkIntoLines(
+  chunkString,
+  lineSeparator,
+  valueDelimiter,
+  isInQuotes
+) {
+  const lineSeparators = getIndexesOfString(chunkString, lineSeparator);
+  const valueDelimiters = getIndexesOfString(chunkString, valueDelimiter);
+  const quotes = getIndexesOfString(chunkString, `"`);
+  const elementsArray = getElementsArray(
+    lineSeparators,
+    valueDelimiters,
+    quotes
+  );
+  const symbolsInSeparator = lineSeparator === "\r\n" ? 2 : 1;
+  const lines = splitChunk(
+    chunkString,
+    elementsArray,
+    isInQuotes,
+    symbolsInSeparator
+  );
+  return lines;
+}
+
+function splitChunk(
+  chunkString,
+  elementsArray,
+  isInQuotes,
+  symbolsInSeparator
+) {
+  const lines = [];
+  let index = 0;
+  elementsArray.forEach((el, elIndex) => {
+    if (el.symbol === "line") {
+      if (!isInQuotes) {
+        lines.push(chunkString.slice(index, el.index));
+        index = el.index + symbolsInSeparator;
+      }
+    } else if (el.symbol === "quote") {
+      isInQuotes = !isInQuotes;
+    } else {
+    }
+  });
+  return lines;
+}
+
+function getElementsArray(lineSeparators, valueDelimiters, quotes) {
+  return getElementArray(lineSeparators, "line")
+    .concat(getElementArray(valueDelimiters, "value"))
+    .concat(getElementArray(quotes, "quote"))
+    .sort((a, b) => a.index - b.index);
+}
+
+function getElementArray(array, symbol) {
+  return array.map((el) => {
+    return { index: el.index, symbol };
+  });
+}
+
+function getIndexesOfString(chunkString, subStr) {
+  return [...chunkString.matchAll(new RegExp(`${subStr}`, "g"))];
+}
 
 module.exports = {
+  splitChunkIntoLines,
   updateProgressBar,
   getLineSeparator,
   getValueDelimiter,
+  fatalError,
+  warning,
 };
