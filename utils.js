@@ -69,50 +69,25 @@ function validateDelimiter(delimiter) {
   } else return { isCorrect: false };
 }
 
-function splitChunkIntoLines(
-  chunkString,
-  lineSeparator,
-  valueDelimiter,
-  isInQuotes
-) {
+function splitChunkIntoLines(chunkString, lineSeparator) {
   const lineSeparators = getIndexesOfString(chunkString, lineSeparator);
-  const valueDelimiters = getIndexesOfString(chunkString, valueDelimiter);
-  const quotes = getIndexesOfString(chunkString, `"`);
-  const elementsArray = getElementsArray(
-    lineSeparators,
-    valueDelimiters,
-    quotes
-  );
   const symbolsInSeparator = lineSeparator === "\r\n" ? 2 : 1;
-  const lines = splitChunk(
-    chunkString,
-    elementsArray,
-    isInQuotes,
-    symbolsInSeparator
-  );
-  return lines;
+  return splitChunk(chunkString, lineSeparators, symbolsInSeparator);
+
+  // return lines;
 }
 
-function splitChunk(
-  chunkString,
-  elementsArray,
-  isInQuotes,
-  symbolsInSeparator
-) {
+function splitChunk(chunkString, elementsArray, symbolsInSeparator) {
   const lines = [];
   let index = 0;
-  elementsArray.forEach((el, elIndex) => {
-    if (el.symbol === "line") {
-      if (!isInQuotes) {
-        lines.push(chunkString.slice(index, el.index));
-        index = el.index + symbolsInSeparator;
-      }
-    } else if (el.symbol === "quote") {
-      isInQuotes = !isInQuotes;
-    } else {
-    }
+  elementsArray.forEach((el) => {
+    lines.push(chunkString.slice(index, el.index));
+    index = el.index + symbolsInSeparator;
   });
-  return lines;
+  return {
+    lines,
+    restOfTheChunk: chunkString.slice(index, chunkString.length),
+  };
 }
 
 function getElementsArray(lineSeparators, valueDelimiters, quotes) {
