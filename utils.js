@@ -24,9 +24,10 @@ function fatalError(error) {
 function getLineSeparator(chunkString) {
   const lfSepIndex = chunkString.indexOf("\n");
   const crlfSepIndex = chunkString.indexOf("\r\n");
+
   if (crlfSepIndex !== -1) return "\r\n";
   else if (lfSepIndex !== -1) return "\n";
-  else return "\r";
+  return "\r";
 }
 
 async function getValueDelimiter({ chunkString, lineSeparator }) {
@@ -34,6 +35,7 @@ async function getValueDelimiter({ chunkString, lineSeparator }) {
     //try to detect delimiter automatically
     const delimiters = [",", "\t", ";", " ", "|"];
     const firstLine = chunkString.slice(0, chunkString.indexOf(lineSeparator));
+
     for (let delimiter of delimiters) {
       const indexOfDelimiter = firstLine.indexOf(delimiter);
       if (indexOfDelimiter !== -1) {
@@ -46,11 +48,11 @@ async function getValueDelimiter({ chunkString, lineSeparator }) {
       output: process.stdout,
     });
     warning(`Auto-detection of values delimiter has failed.`);
+
     readline.question(`Enter the delimiter in double quotes: `, (delimiter) => {
       const validationResult = validateDelimiter(delimiter);
-      validationResult.isCorrect
-        ? resolve(validationResult.delimiter)
-        : fatalError("Wrong separator");
+      if (validationResult.isCorrect) resolve(validationResult.delimiter);
+      else fatalError("Wrong separator");
       readline.close();
     });
   });
@@ -66,24 +68,26 @@ function validateDelimiter(delimiter) {
       isCorrect: true,
       delimiter: delimiter.slice(1, delimiter.length - 1),
     };
-  } else return { isCorrect: false };
+  }
+  return { isCorrect: false };
 }
 
 function splitChunkIntoLines(chunkString, lineSeparator) {
   const lineSeparators = getIndexesOfString(chunkString, lineSeparator);
   const symbolsInSeparator = lineSeparator === "\r\n" ? 2 : 1;
-  return splitChunk(chunkString, lineSeparators, symbolsInSeparator);
 
-  // return lines;
+  return splitChunk(chunkString, lineSeparators, symbolsInSeparator);
 }
 
 function splitChunk(chunkString, elementsArray, symbolsInSeparator) {
   const lines = [];
   let index = 0;
+
   elementsArray.forEach((el) => {
     lines.push(chunkString.slice(index, el.index));
     index = el.index + symbolsInSeparator;
   });
+
   return {
     lines,
     restOfTheChunk: chunkString.slice(index, chunkString.length),

@@ -12,6 +12,7 @@ const handleChunk = (function () {
   let isFirst = true;
   let restOfPrevChunk = "";
   let byteProcessed = 0;
+
   return function (chunk, lineSeparator, fileSize) {
     byteProcessed += 10;
     updateProgressBar(`${Math.round((byteProcessed / fileSize) * 100)}%`);
@@ -21,6 +22,7 @@ const handleChunk = (function () {
       lineSeparator
     );
     restOfPrevChunk = restOfTheChunk;
+
     let result;
     if (lines.length > 1) result = lines.join("") + lineSeparator;
     else if (lines.length === 1) result = lines[0] + lineSeparator;
@@ -50,6 +52,7 @@ function pars(modify, readPath, writePath) {
     highWaterMark: 10,
   });
   const writeStream = fs.createWriteStream(writePath);
+
   readStream
     .on("error", (e) => fatalError(`Error reading file ${readPath}\n${e}`))
     .pipe(modify)
@@ -63,6 +66,7 @@ async function generateTenGBCSV() {
   const writePath = "./extendedTest.csv";
   const { lineSeparator, valueDelimiter } = await getSeparators(readPath);
   const fileSize = await getFileSize(readPath);
+
   pars(
     modify({ fileSize, lineSeparator, valueDelimiter }),
     readPath,

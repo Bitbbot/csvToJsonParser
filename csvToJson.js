@@ -1,6 +1,24 @@
-async function start() {}
+async function start() {
+  // const { sourceFile, resultFile, separator } = getArgs();
+  getArgs();
+}
 
-await start();
+function getArgs() {
+  const args = process.argv.slice(2);
+  function findIndexCallback(item, name) {
+    return item === name;
+  }
+  console.log(args);
+  // if
+  const sourceFileIndex =
+    args.findIndex((item) => findIndexCallback(item, "--sourceFile")) + 1;
+  const resultFileIndex =
+    args.findIndex((item) => findIndexCallback(item, "--resultFile")) + 1;
+  const separatorIndex =
+    args.findIndex((item) => findIndexCallback(item, "--separator")) + 1;
+}
+
+start();
 
 // function splitChunk(
 //     chunkString,
