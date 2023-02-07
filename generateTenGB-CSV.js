@@ -5,10 +5,10 @@ const {
   fatalError,
   splitChunkIntoLines,
 } = require("./utils");
-const { getFileSize, getSeparators } = require("./file");
+const { getFileSize, getSeparators, pars } = require("./file");
 
 const handleChunk = (function () {
-  const numberOfCopies = 15000;
+  const numberOfCopies = 3;
   let isFirst = true;
   let restOfPrevChunk = "";
   let byteProcessed = 0;
@@ -47,31 +47,13 @@ function modify({ fileSize, lineSeparator }) {
   });
 }
 
-function pars(modify, readPath, writePath) {
-  const readStream = fs.createReadStream(readPath, {
-    highWaterMark: 10,
-  });
-  const writeStream = fs.createWriteStream(writePath);
-
-  readStream
-    .on("error", (e) => fatalError(`Error reading file ${readPath}\n${e}`))
-    .pipe(modify)
-    .on("error", (e) => fatalError(`Error modifying file\n${e}`))
-    .pipe(writeStream)
-    .on("error", (e) => fatalError(`Error writing file ${writePath}\n${e}`));
-}
-
 async function generateTenGBCSV() {
   const readPath = "./test.csv";
   const writePath = "./extendedTest.csv";
-  const { lineSeparator, valueDelimiter } = await getSeparators(readPath);
+  const { lineSeparator } = await getSeparators(readPath, false);
   const fileSize = await getFileSize(readPath);
 
-  pars(
-    modify({ fileSize, lineSeparator, valueDelimiter }),
-    readPath,
-    writePath
-  );
+  pars(modify({ fileSize, lineSeparator }), readPath, writePath, 0);
 }
 
 generateTenGBCSV();
