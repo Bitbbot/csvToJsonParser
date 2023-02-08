@@ -33,19 +33,24 @@ async function getParams() {
   } else fatalError("Incorrect arguments");
 
   //handle incorrect input
-  if (processArgs.length !== 4 && processArgs.length !== 6)
+  if (processArgs.length !== 4 && processArgs.length !== 6) {
     fatalError("Incorrect number of arguments");
-  if (fs.existsSync(args.sourceFilePath) === false)
+  }
+  if (fs.existsSync(args.sourceFilePath) === false) {
     fatalError("Source file hasn't been found");
-  if (path.extname(args.sourceFilePath) !== ".csv")
+  }
+  if (path.extname(args.sourceFilePath) !== ".csv") {
     fatalError("Source file has wrong format");
-  if (args.resultFilePath.slice(args.resultFilePath.length - 5) !== ".json")
+  }
+  if (args.resultFilePath.slice(args.resultFilePath.length - 5) !== ".json") {
     fatalError("Wrong extension of the result file");
+  }
 
   //get optional argument "separator"
   if (processArgs.length === 6)
-    if (processArgs[4] === "--separator") args.valueDelimiter = processArgs[5];
-    else fatalError("Incorrect arguments");
+    if (processArgs[4] === "--separator") {
+      args.valueDelimiter = processArgs[5];
+    } else fatalError("Incorrect arguments");
 
   //get lineSeparator and valueDelimiter if wasn't passed
   if (processArgs.length === 6) {
@@ -154,7 +159,7 @@ const transformLineIntoObject = function (line, valueDelimiter) {
       }
     } else {
       if (!isInQuotes) isInQuotes = true;
-      else if (line[elementsArray[i].index + 1 === valueDelimiter]) {
+      else if (line[elementsArray[i].index + 1] === valueDelimiter) {
         isInQuotes = false;
       }
     }
@@ -162,11 +167,22 @@ const transformLineIntoObject = function (line, valueDelimiter) {
 
   values.push(line.slice(index));
 
-  for (let i = 0; i < values.length; i++) {
-    resObject[keys()[i]] = values[i];
+  const newValues = removeDoubleQuotes(values);
+
+  for (let i = 0; i < newValues.length; i++) {
+    resObject[keys()[i]] = newValues[i];
   }
   return JSON.stringify(resObject);
 };
+
+function removeDoubleQuotes(strings) {
+  return strings.map((str) => {
+    if (str[0] === '"') {
+      return str.slice(1, -1);
+    }
+    return str;
+  });
+}
 
 const handleFlush = function (restOfPrevChunk, valueDelimiter) {
   let resultString = ",";

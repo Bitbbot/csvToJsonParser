@@ -20,9 +20,11 @@ const handleChunk = (function () {
     restOfPrevChunk = restOfTheChunk;
 
     let result;
-    if (lines.length > 1) result = lines.join("") + lineSeparator;
-    else if (lines.length === 1) result = lines[0] + lineSeparator;
-    else result = "";
+    if (lines.length > 1) {
+      result = lines.join("") + lineSeparator;
+    } else if (lines.length === 1) {
+      result = lines[0] + lineSeparator;
+    } else result = "";
     if (isFirst && lines.length === 1) {
       isFirst = false;
       return result;

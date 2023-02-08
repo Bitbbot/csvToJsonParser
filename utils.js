@@ -51,8 +51,11 @@ async function getValueDelimiter({ chunkString, lineSeparator }) {
 
     readline.question(`Enter the delimiter in double quotes: `, (delimiter) => {
       const validationResult = validateDelimiter(delimiter);
-      if (validationResult.isCorrect) resolve(validationResult.delimiter);
-      else fatalError("Wrong separator");
+      if (validationResult.isCorrect) {
+        resolve(validationResult.delimiter);
+      } else {
+        fatalError("Wrong separator");
+      }
       readline.close();
     });
   });
