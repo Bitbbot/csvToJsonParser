@@ -94,9 +94,8 @@ function splitChunk(chunkString, elementsArray, symbolsInSeparator) {
   };
 }
 
-function getElementsArray(lineSeparators, valueDelimiters, quotes) {
-  return getElementArray(lineSeparators, "line")
-    .concat(getElementArray(valueDelimiters, "value"))
+function getElementsArray(valueDelimiters, quotes) {
+  return getElementArray(valueDelimiters, "value")
     .concat(getElementArray(quotes, "quote"))
     .sort((a, b) => a.index - b.index);
 }
@@ -118,4 +117,6 @@ module.exports = {
   getValueDelimiter,
   fatalError,
   warning,
+  getIndexesOfString,
+  getElementsArray,
 };

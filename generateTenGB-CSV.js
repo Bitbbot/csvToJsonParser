@@ -1,14 +1,9 @@
-const fs = require("fs");
 const { Transform } = require("stream");
-const {
-  updateProgressBar,
-  fatalError,
-  splitChunkIntoLines,
-} = require("./utils");
+const { updateProgressBar, splitChunkIntoLines } = require("./utils");
 const { getFileSize, getSeparators, pars } = require("./file");
 
 const handleChunk = (function () {
-  const numberOfCopies = 3;
+  const numberOfCopies = 15000;
   let isFirst = true;
   let restOfPrevChunk = "";
   let byteProcessed = 0;
@@ -16,6 +11,7 @@ const handleChunk = (function () {
   return function (chunk, lineSeparator, fileSize) {
     byteProcessed += 10;
     updateProgressBar(`${Math.round((byteProcessed / fileSize) * 100)}%`);
+
     const chunkString = restOfPrevChunk + chunk.toString();
     const { lines, restOfTheChunk } = splitChunkIntoLines(
       chunkString,
@@ -53,7 +49,7 @@ async function generateTenGBCSV() {
   const { lineSeparator } = await getSeparators(readPath, false);
   const fileSize = await getFileSize(readPath);
 
-  pars(modify({ fileSize, lineSeparator }), readPath, writePath, 0);
+  pars(modify({ fileSize, lineSeparator }), readPath, writePath, 10);
 }
 
 generateTenGBCSV();
